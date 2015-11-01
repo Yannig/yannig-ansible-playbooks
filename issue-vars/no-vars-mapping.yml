@@ -1,0 +1,28 @@
+---
+# Vars mapper test
+
+- name: "Test"
+  hosts: "oracle"
+  # connection: "local"
+  gather_facts: no
+  vars:
+    app_field1: "field1"
+    app_field2: "field2"
+    app_field3: "field3"
+    app_field4: "field4"
+    app_field5: "field5"
+    app_field6: "field6"
+    app_field7: "field7"
+    hash_map1:
+      field1:
+        name:  "field1"
+        field: "field1"
+    hash_map2:
+      field1:
+        name:  "field1"
+        field: "field1"
+      field2:
+        name:  "field2"
+        field: "field2"
+  roles:
+    - "do-include"

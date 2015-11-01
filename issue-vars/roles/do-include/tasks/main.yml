@@ -1,0 +1,11 @@
+---
+
+- debug: var=application_name
+
+- name: "Répertoire des roles"
+  file: path="/tmp/{{item.value.field}}" state=directory
+  with_dict: hash_map1|default({})
+
+- include: "include1.yml"
+
+- include: "include1.yml"

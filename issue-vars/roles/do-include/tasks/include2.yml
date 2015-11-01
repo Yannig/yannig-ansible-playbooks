@@ -1,0 +1,8 @@
+---
+
+- shell: >
+    export FIELD={{item.item.value.field}} ;
+    echo "$FIELD" ;
+    cat /tmp/{{item.item.value.field}}/{{item.item.value.name}}.txt
+  when: item.changed and item.dest is defined
+  with_items: oracle_element_to_update.results

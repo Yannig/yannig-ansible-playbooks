@@ -1,0 +1,17 @@
+---
+
+- template: src=test.j2 dest="/tmp/{{item.value.field}}/1-{{item.value.name}}.txt"
+  when: not item.value.name|lower in items_excluded
+  with_dict: hash_map1|default({})
+  register: elements
+
+- include: include2.yml
+  when: elements.results is defined
+
+- template: src=test-2.j2 dest="/tmp/{{item.value.field}}/2-{{item.value.name}}.txt"
+  when: not item.value.name|lower in items_excluded
+  with_dict: hash_map2|default({})
+  register: elements
+
+- include: include2.yml
+  when: elements.results is defined

@@ -1,0 +1,121 @@
+---
+
+# variable mapping
+app_field1: "{{config_vars_mapping[application_name]['fields']['field1']}}"
+app_field2: "{{config_vars_mapping[application_name]['fields']['field2']}}"
+app_field3: "{{config_vars_mapping[application_name]['fields']['field3']}}"
+app_field4: "{{config_vars_mapping[application_name]['fields']['field4']}}"
+app_field5: "{{config_vars_mapping[application_name]['fields']['field5']}}"
+app_field6: "{{config_vars_mapping[application_name]['fields']['field6']}}"
+app_field7: "{{config_vars_mapping[application_name]['fields']['field7']}}"
+
+# Hash map mapping
+config_vars_mapping:
+  application1:
+    fields:
+      field1: "{{application1_field1|default('NA')}}"
+      field2: "{{application1_field2|default('NA')}}"
+      field3: "{{application1_field3|default('NA')}}"
+      field4: "{{application1_field4|default('NA')}}"
+      field5: "{{application1_field5|default('NA')}}"
+      field6: "{{application1_field6|default('NA')}}"
+      field7: "{{application1_field7|default('NA')}}"
+  application2:
+    fields:
+      field1: "{{application2_field1|default('NA')}}"
+      field2: "{{application2_field2|default('NA')}}"
+      field3: "{{application2_field3|default('NA')}}"
+      field4: "{{application2_field4|default('NA')}}"
+      field5: "{{application2_field5|default('NA')}}"
+      field6: "{{application2_field6|default('NA')}}"
+      field7: "{{application2_field7|default('NA')}}"
+  application3:
+    fields:
+      field1: "{{application3_field1|default('NA')}}"
+      field2: "{{application3_field2|default('NA')}}"
+      field3: "{{application3_field3|default('NA')}}"
+      field4: "{{application3_field4|default('NA')}}"
+      field5: "{{application3_field5|default('NA')}}"
+      field6: "{{application3_field6|default('NA')}}"
+      field7: "{{application3_field7|default('NA')}}"
+  application4:
+    fields:
+      field1: "{{application4_field1|default('NA')}}"
+      field2: "{{application4_field2|default('NA')}}"
+      field3: "{{application4_field3|default('NA')}}"
+      field4: "{{application4_field4|default('NA')}}"
+      field5: "{{application4_field5|default('NA')}}"
+      field6: "{{application4_field6|default('NA')}}"
+      field7: "{{application4_field7|default('NA')}}"
+  application5:
+    fields:
+      field1: "{{application5_field1|default('NA')}}"
+      field2: "{{application5_field2|default('NA')}}"
+      field3: "{{application5_field3|default('NA')}}"
+      field4: "{{application5_field4|default('NA')}}"
+      field5: "{{application5_field5|default('NA')}}"
+      field6: "{{application5_field6|default('NA')}}"
+      field7: "{{application5_field7|default('NA')}}"
+  application6:
+    fields:
+      field1: "{{application6_field1|default('NA')}}"
+      field2: "{{application6_field2|default('NA')}}"
+      field3: "{{application6_field3|default('NA')}}"
+      field4: "{{application6_field4|default('NA')}}"
+      field5: "{{application6_field5|default('NA')}}"
+      field6: "{{application6_field6|default('NA')}}"
+      field7: "{{application6_field7|default('NA')}}"
+  application7:
+    fields:
+      field1: "{{application7_field1|default('NA')}}"
+      field2: "{{application7_field2|default('NA')}}"
+      field3: "{{application7_field3|default('NA')}}"
+      field4: "{{application7_field4|default('NA')}}"
+      field5: "{{application7_field5|default('NA')}}"
+      field6: "{{application7_field6|default('NA')}}"
+      field7: "{{application7_field7|default('NA')}}"
+  application8:
+    fields:
+      field1: "{{application8_field1|default('NA')}}"
+      field2: "{{application8_field2|default('NA')}}"
+      field3: "{{application8_field3|default('NA')}}"
+      field4: "{{application8_field4|default('NA')}}"
+      field5: "{{application8_field5|default('NA')}}"
+      field6: "{{application8_field6|default('NA')}}"
+      field7: "{{application8_field7|default('NA')}}"
+  application9:
+    fields:
+      field1: "{{application7_field1|default('NA')}}"
+      field2: "{{application7_field2|default('NA')}}"
+      field3: "{{application7_field3|default('NA')}}"
+      field4: "{{application7_field4|default('NA')}}"
+      field5: "{{application7_field5|default('NA')}}"
+      field6: "{{application7_field6|default('NA')}}"
+      field7: "{{application7_field7|default('NA')}}"
+  application10:
+    fields:
+      field1: "{{application8_field1|default('NA')}}"
+      field2: "{{application8_field2|default('NA')}}"
+      field3: "{{application8_field3|default('NA')}}"
+      field4: "{{application8_field4|default('NA')}}"
+      field5: "{{application8_field5|default('NA')}}"
+      field6: "{{application8_field6|default('NA')}}"
+      field7: "{{application8_field7|default('NA')}}"
+  application11:
+    fields:
+      field1: "{{application7_field1|default('NA')}}"
+      field2: "{{application7_field2|default('NA')}}"
+      field3: "{{application7_field3|default('NA')}}"
+      field4: "{{application7_field4|default('NA')}}"
+      field5: "{{application7_field5|default('NA')}}"
+      field6: "{{application7_field6|default('NA')}}"
+      field7: "{{application7_field7|default('NA')}}"
+  application12:
+    fields:
+      field1: "{{application8_field1|default('NA')}}"
+      field2: "{{application8_field2|default('NA')}}"
+      field3: "{{application8_field3|default('NA')}}"
+      field4: "{{application8_field4|default('NA')}}"
+      field5: "{{application8_field5|default('NA')}}"
+      field6: "{{application8_field6|default('NA')}}"
+      field7: "{{application8_field7|default('NA')}}"
