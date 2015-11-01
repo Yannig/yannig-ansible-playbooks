@@ -1,5 +1,7 @@
 ---
 
+application_name: "application1"
+
 # variable mapping
 app_field1: "{{config_vars_mapping[application_name]['fields']['field1']}}"
 app_field2: "{{config_vars_mapping[application_name]['fields']['field2']}}"

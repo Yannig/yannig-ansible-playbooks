@@ -2,8 +2,8 @@
 # Vars mapper test
 
 - name: "Test"
-  hosts: "oracle"
-  # connection: "local"
+  hosts: "localhost"
+  connection: "local"
   gather_facts: no
   vars:
     app_field1: "field1"
