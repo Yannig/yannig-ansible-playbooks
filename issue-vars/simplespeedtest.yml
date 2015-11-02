@@ -1,0 +1,33 @@
+---
+# simplespeedtest.yml
+- hosts: localhost
+  tasks:
+    - command: echo 1
+    - command: echo 2
+    - command: echo 3
+    - command: echo 4
+    - command: echo 5
+    - command: echo 6
+    - command: echo 7
+    - command: echo 8
+    - command: echo 9
+    - command: echo 10
+    - command: echo 12
+    - command: echo 13
+    - command: echo 14
+    - command: echo 15
+    - command: echo 16
+    - command: echo 17
+    - command: echo 18
+    - command: echo 19
+    - command: echo 20
+    - command: echo 21
+    - command: echo 22
+    - command: echo 23
+    - command: echo 24
+    - command: echo 25
+    - command: echo 26
+    - command: echo 27
+    - command: echo 28
+    - command: echo 29
+    - command: echo 30
