@@ -1,0 +1,5 @@
+---
+- hosts: hostname1
+  gather_facts: no
+  tasks:
+    - ping:

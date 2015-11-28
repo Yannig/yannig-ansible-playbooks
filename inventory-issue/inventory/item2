@@ -1,0 +1,1 @@
+hostname1 ansible_connection=docker ansible_host=3807d1a03c4c
