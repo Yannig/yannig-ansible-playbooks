@@ -1,0 +1,10 @@
+---
+- hosts: central
+  gather_facts: no
+  vars:
+    - package1_part: "libs"
+  tasks:
+    - yum: name=rpm-{{item}} state=installed
+      with_items: [ 'build', 'build-{{package1_part}}' ]
+    - debug: msg=rpm-{{item}}
+      with_items: [ 'build', 'build-{{package1_part}}' ]
