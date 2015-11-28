@@ -1,0 +1,75 @@
+---
+- name: "Setting up all {{ game_env }} variables"
+  hosts: compute
+  gather_facts: False
+  connection: local
+  no_log: True
+  #vars:
+    #- game_env: "arenamulti"
+    #- aws_env: "_defaults"
+  tasks:
+    - name: Including the defaults
+      include_vars: "variables/_defaults.yml"
+      tags: [ 'always' ]
+
+    - name: Including AWS Specific Variables
+      include_vars: "variables/{{ aws_env }}.yml"
+      tags: [ 'always' ]
+
+    - name: Including AWS Specific Secret Variables
+      include_vars: "variables/{{ aws_env }}-secrets.yml"
+      tags: [ 'always' ]
+
+    - name: Including Game+AWS Specific Variables
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "variables/{{ game_env }}-{{ aws_env }}.yml"
+        - "variables/_defaults-{{ game }}-{{ aws_env }}.yml"
+      tags: [ 'always' ]
+
+    - name: Including Game+AWS Specific Secrets
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "variables/{{ game_env }}-{{ aws_env }}-secrets.yml"
+        - "variables/_defaults-{{ game }}-{{ aws_env }}-secrets.yml"
+      tags: [ 'always' ]
+
+    - name: Including Game Variables
+      include_vars: "variables/game-{{ game }}.yml"
+      tags: [ 'always' ]
+
+- name: "Setting up all {{ game_env }} variables"
+  hosts: tag_deployment_ansible
+  gather_facts: False
+  connection: local
+  no_log: True
+  tasks:
+    - name: Including the defaults
+      include_vars: "variables/_defaults.yml"
+      tags: [ 'always' ]
+
+    - name: Including AWS Specific Variables
+      include_vars: "variables/{{ aws_env }}.yml"
+      tags: [ 'always' ]
+
+    - name: Including AWS Specific Secret Variables
+      include_vars: "variables/{{ aws_env }}-secrets.yml"
+      tags: [ 'always' ]
+
+    - name: Including Game+AWS Specific Variables
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "variables/{{ game_env }}-{{ aws_env }}.yml"
+        - "variables/_defaults-{{ game }}-{{ aws_env }}.yml"
+      tags: [ 'always' ]
+
+    - name: Including Game+AWS Specific Secrets
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "variables/{{ game_env }}-{{ aws_env }}-secrets.yml"
+        - "variables/_defaults-{{ game }}-{{ aws_env }}-secrets.yml"
+      tags: [ 'always' ]
+
+    - name: Including Game Variables
+      include_vars: "variables/game-{{ game }}.yml"
+      tags: [ 'always' ]

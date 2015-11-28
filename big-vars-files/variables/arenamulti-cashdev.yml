@@ -1,0 +1,773 @@
+---
+# set these parameters to control the region, keypair, and AMI that are launched
+instances_keypair: devkey
+image_id: ami-d85e75b0
+docker_install: true
+splunk_forwarder_install: false
+env: "{{ game_env }}"
+game: arena
+do_accelerate: True
+
+platform_deployment_type: docker
+
+# RabbitMQ variables
+# 'rabbitmq_admin_pass' are in *-*-secrets.yml
+rabbitmq_admin_user: idle
+
+used_services:
+  redis:
+    default:
+      environment: "{{ env }}_leaderboards"   # Which redis_environment tag to use
+      balancer: haproxy
+      haproxy_port: 6380
+    leaderboards:
+      environment: "{{ env }}_leaderboards"   # Which redis_environment tag to use
+      balancer: haproxy
+      haproxy_port: 6379
+    gamestate:
+      environment: "{{ env }}_gamestate"      # Which redis_environment tag to use
+      balancer: haproxy
+      haproxy_port: 6378
+  rabbitmq:
+    internal:
+      environment: "{{ env }}"                # Which rabbitmq_environment tag to use
+      balancer: haproxy
+      haproxy_port: 5672
+      user: "{{ rabbitmq_admin_user }}"
+      password: "{{ rabbitmq_admin_pass }}"
+    general:
+      environment: "{{ env }}"                # Which rabbitmq_environment tag to use
+      balancer: haproxy
+      haproxy_port: 5673
+      user: "{{ rabbitmq_admin_user }}"
+      password: "{{ rabbitmq_admin_pass }}"
+  memcache:
+    core:
+      environment: "{{ env }}_core"          # Which memcache_environment tag to use
+    gametripeaks:
+      environment: "{{ env }}_core"          # Which memcache_environment tag to use
+  mysql:
+    masterdb:
+      environment: "{{ env }}"
+      hosts:
+        - masterdb-arenamulti.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+    configdb:
+      environment: "{{ env }}"
+      hosts:
+        - configdb-arenamulti.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+    fmrdb:
+      environment: "{{ env }}"
+      hosts:
+        - fmrdb-arenamulti.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+    tournamentdb:
+      environment: "{{ env }}"
+      hosts:
+        - tournamentdb-arenamulti.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+    paymentsdb:
+      environment: "{{ env }}"
+      hosts:
+        - paymentsdb-shard0-arenamulti.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+        - paymentsdb-shard1-arenamulti.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+    usersdb:
+      environment: "{{ env }}"
+      hosts:
+        - usersdb-shard0-arenamulti.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+        - usersdb-shard1-arenamulti.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+
+elb_sg: 'sg-9442aef3'
+elb_ssl_certid: arn:aws:iam::12345678:server-certificate/arena-dev_exp_072017
+
+ses:
+  smtp_server: email-smtp.us-east-1.amazonaws.com
+  smtp_port: 465
+  use_tls: yes
+
+ec2_instances:
+  # Application Servers
+  - type: admin
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['private']
+    instance_tags:
+      Name: "admin-{{ game_env }}"
+      role: admin
+      environment: "{{ game_env }}"
+      deployment: ansible
+    count_tag:
+      role: admin
+      environment: "{{ game_env }}"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 20
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Public Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['private'] }}"
+        exact_count: 0
+      - az: b
+        # Public Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['private'] }}"
+        exact_count: 0
+      - az: d
+        # Public Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['private'] }}"
+        exact_count: 0
+      - az: e
+        # Public Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['private'] }}"
+        exact_count: 1
+    wait: yes
+    wait_timeout: 360
+
+  # 3 payments services
+  - type: payments
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['public']
+    instance_tags:
+      Name: "payments-{{ game_env }}"
+      role: payments
+      environment: "{{ game_env }}"
+      deployment: ansible
+    count_tag:
+      role: payments
+      environment: "{{ game_env }}"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 20
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Public Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['public'] }}"
+        exact_count: 0
+      - az: b
+        # Public Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['public'] }}"
+        exact_count: 1
+      - az: d
+        # Public Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['public'] }}"
+        exact_count: 1
+      - az: e
+        # Public Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['public'] }}"
+        exact_count: 1
+    wait: yes
+    wait_timeout: 360
+
+  # 3 tournaments servers
+  - type: tournaments
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['public']
+    instance_tags:
+      Name: "tournaments-{{ game_env }}"
+      role: tournaments
+      environment: "{{ game_env }}"
+      deployment: ansible
+    count_tag:
+      role: tournaments
+      environment: "{{ game_env }}"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 20
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Public Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['public'] }}"
+        exact_count: 1
+      - az: b
+        # Public Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['public'] }}"
+        exact_count: 1
+      - az: d
+        # Public Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['public'] }}"
+        exact_count: 1
+      - az: e
+        # Public Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['public'] }}"
+        exact_count: 0
+    wait: yes
+    wait_timeout: 360
+
+  # 3 usermanagement services
+  - type: usermanagement
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['public']
+    instance_tags:
+      Name: "usermanagement-{{ game_env }}"
+      role: usermanagement
+      environment: "{{ game_env }}"
+      deployment: ansible
+    count_tag:
+      role: usermanagement
+      environment: "{{ game_env }}"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 20
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Public Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['public'] }}"
+        exact_count: 1
+      - az: b
+        # Public Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['public'] }}"
+        exact_count: 1
+      - az: d
+        # Public Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['public'] }}"
+        exact_count: 1
+      - az: e
+        # Public Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['public'] }}"
+        exact_count: 0
+    wait: yes
+    wait_timeout: 360
+
+  # 3 apps services
+  - type: apps
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['public']
+    instance_tags:
+      Name: "apps-{{ game_env }}"
+      role: apps
+      environment: "{{ game_env }}"
+      deployment: ansible
+    count_tag:
+      role: apps
+      environment: "{{ game_env }}"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 20
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Public Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['public'] }}"
+        exact_count: 1
+      - az: b
+        # Public Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['public'] }}"
+        exact_count: 1
+      - az: d
+        # Public Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['public'] }}"
+        exact_count: 0
+      - az: e
+        # Public Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['public'] }}"
+        exact_count: 1
+    wait: yes
+    wait_timeout: 360
+
+  # 3 gametripeaks nodes
+  - type: gametripeaks
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['public']
+    instance_tags:
+      Name: "gametripeaks-{{ game_env }}"
+      role: gametripeaks
+      environment: "{{ game_env }}"
+      deployment: ansible
+    count_tag:
+      role: gametripeaks
+      environment: "{{ game_env }}"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 20
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Public Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['public'] }}"
+        exact_count: 1
+      - az: b
+        # Public Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['public'] }}"
+        exact_count: 0
+      - az: d
+        # Public Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['public'] }}"
+        exact_count: 1
+      - az: e
+        # Public Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['public'] }}"
+        exact_count: 1
+    wait: yes
+    wait_timeout: 360
+
+  # 3 celeryuser nodes
+  - type: celeryuser
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['private']
+    instance_tags:
+      Name: "celeryuser-{{ game_env }}"
+      role: celeryuser
+      environment: "{{ game_env }}"
+      deployment: ansible
+    count_tag:
+      role: celeryuser
+      environment: "{{ game_env }}"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 20
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Public Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['private'] }}"
+        exact_count: 0
+      - az: b
+        # Public Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['private'] }}"
+        exact_count: 1
+      - az: d
+        # Public Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['private'] }}"
+        exact_count: 1
+      - az: e
+        # Public Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['private'] }}"
+        exact_count: 1
+    wait: yes
+    wait_timeout: 360
+
+  # 3 celerynotif servers
+  - type: celerynotif
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['private']
+    instance_tags:
+      Name: "celerynotif-{{ game_env }}"
+      role: celerynotif
+      environment: "{{ game_env }}"
+      deployment: ansible
+    count_tag:
+      role: celerynotif
+      environment: "{{ game_env }}"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 20
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Public Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['private'] }}"
+        exact_count: 1
+      - az: b
+        # Public Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['private'] }}"
+        exact_count: 1
+      - az: d
+        # Public Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['private'] }}"
+        exact_count: 1
+      - az: e
+        # Public Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['private'] }}"
+        exact_count: 0
+    wait: yes
+    wait_timeout: 360
+
+  # 3 celeryfb servers
+  - type: celeryfb
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['private']
+    instance_tags:
+      Name: "celeryfb-{{ game_env }}"
+      role: celeryfb
+      environment: "{{ game_env }}"
+      deployment: ansible
+    count_tag:
+      role: celeryfb
+      environment: "{{ game_env }}"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 20
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Public Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['private'] }}"
+        exact_count: 1
+      - az: b
+        # Public Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['private'] }}"
+        exact_count: 1
+      - az: d
+        # Public Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['private'] }}"
+        exact_count: 0
+      - az: e
+        # Public Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['private'] }}"
+        exact_count: 1
+    wait: yes
+    wait_timeout: 360
+
+  # 3 celeryinternal servers
+  - type: celeryinternal
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['private']
+    instance_tags:
+      Name: "celeryinternal-{{ game_env }}"
+      role: celeryinternal
+      environment: "{{ game_env }}"
+      deployment: ansible
+    count_tag:
+      role: celeryinternal
+      environment: "{{ game_env }}"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 20
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Public Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['private'] }}"
+        exact_count: 1
+      - az: b
+        # Public Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['private'] }}"
+        exact_count: 1
+      - az: d
+        # Public Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['private'] }}"
+        exact_count: 0
+      - az: e
+        # Public Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['private'] }}"
+        exact_count: 1
+    wait: yes
+    wait_timeout: 360
+
+  # 3 Memcache Servers for "core" cluster
+  - type: memcache
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['private']
+    instance_tags:
+      Name: "memcache-{{ env }}-core"
+      role: memcache
+      environment: "{{ env }}"
+      memcache_environment: "{{ env }}_core"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        # For any volume, a volume size less than 1 will be interpreted as a request not to create the volume.
+        volume_size: 0
+        delete_on_termination: true
+    count_tag:
+      role: memcache
+      environment: "{{ env }}"
+      memcache_environment: "{{ env }}_core"
+      deployment: ansible
+    azs:
+      - az: a
+        # Private Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['private'] }}"
+        exact_count: 1
+      - az: b
+        # Private Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['private'] }}"
+        exact_count: 1
+      - az: d
+        # Private Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['private'] }}"
+        exact_count: 1
+      - az: e
+        # Private Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['private'] }}"
+        exact_count: 0
+    wait: yes
+    wait_timeout: 360
+
+  # 1 redis cluster "leaderboards" (2 nodes)
+  - type: redis
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['private']
+    instance_tags:
+      Name: "redis-{{ env }}-leaderboards"
+      role: redis
+      environment: "{{ env }}"
+      redis_environment: "{{ env }}_leaderboards"
+      deployment: ansible
+    count_tag:
+      role: redis
+      environment: "{{ env }}"
+      redis_environment: "{{ env }}_leaderboards"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 10
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Private Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['private'] }}"
+        exact_count: 1
+      - az: b
+        # Private Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['private'] }}"
+        exact_count: 1
+      - az: d
+        # Private Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['private'] }}"
+        exact_count: 0
+      - az: e
+        # Private Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['private'] }}"
+        exact_count: 0
+    wait: yes
+    wait_timeout: 360
+
+  # 1 redis cluster "gamestate" (2 nodes)
+  - type: redis
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['private']
+    instance_tags:
+      Name: "redis-{{ env }}-gamestate"
+      role: redis
+      environment: "{{ env }}"
+      redis_environment: "{{ env }}_gamestate"
+      deployment: ansible
+    count_tag:
+      role: redis
+      environment: "{{ env }}"
+      redis_environment: "{{ env }}_gamestate"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 10
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Private Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['private'] }}"
+        exact_count: 0
+      - az: b
+        # Private Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['private'] }}"
+        exact_count: 0
+      - az: d
+        # Private Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['private'] }}"
+        exact_count: 1
+      - az: e
+        # Private Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['private'] }}"
+        exact_count: 1
+    wait: yes
+    wait_timeout: 360
+
+  # 1 rabbitmq cluster (3 node)
+  - type: rabbitmq
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['private']
+    instance_tags:
+      Name: "rabbitmq-{{ env }}"
+      role: rabbitmq
+      environment: "{{ env }}"
+      rabbitmq_environment: "{{ env }}"
+      deployment: ansible
+    count_tag:
+      role: rabbitmq
+      environment: "{{ env }}"
+      rabbitmq_environment: "{{ env }}"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 0
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Private Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['private'] }}"
+        exact_count: 1
+      - az: b
+        # Private Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['private'] }}"
+        exact_count: 1
+      - az: d
+        # Private Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['private'] }}"
+        exact_count: 1
+      - az: e
+        # Private Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['private'] }}"
+        exact_count: 0
+    wait: yes
+    wait_timeout: 360
+
+spinup_rds: true
+rds_instances:
+  # MasterDB Instance
+  - name: "masterdb-{{ env }}"
+    db_engine: MySQL
+    db_name: "{{ env }}"
+    rds_command: create
+    rds_multi_zone: no
+    rds_option_group: "default:mysql-5-6"
+    rds_parameter_group: utf8
+    rds_engine_version: 5.6.22
+    rds_db_size: 50
+    rds_instance_type: db.m1.small
+    rds_vpc_subnet: gsn-rds-vpc
+    rds_vpc_security_groups: sg-8a42aeed
+    rds_tags:
+      environment: "{{ env }}"
+      deployment: ansible
+      role: masterdb
+
+  # ConfigDB Instance
+  - name: "configdb-{{ env }}"
+    db_engine: MySQL
+    db_name: "{{ env }}"
+    rds_command: create
+    rds_multi_zone: no
+    rds_option_group: "default:mysql-5-6"
+    rds_parameter_group: utf8
+    rds_engine_version: 5.6.22
+    rds_db_size: 10
+    rds_instance_type: db.m1.small
+    rds_vpc_subnet: gsn-rds-vpc
+    rds_vpc_security_groups: sg-8a42aeed
+    rds_tags:
+      environment: "{{ env }}"
+      deployment: ansible
+      role: configdb
+
+  # FMRDB Instance
+  - name: "fmrdb-{{ env }}"
+    db_engine: MySQL
+    db_name: "{{ env }}"
+    rds_command: create
+    rds_multi_zone: no
+    rds_option_group: "default:mysql-5-6"
+    rds_parameter_group: utf8
+    rds_engine_version: 5.6.22
+    rds_db_size: 10
+    rds_instance_type: db.m1.small
+    rds_vpc_subnet: gsn-rds-vpc
+    rds_vpc_security_groups: sg-8a42aeed
+    rds_tags:
+      environment: "{{ env }}"
+      deployment: ansible
+      role: fmrdb
+
+  # TournamentDB Instance
+  - name: "tournamentdb-{{ env }}"
+    db_engine: MySQL
+    db_name: "{{ env }}"
+    rds_command: create
+    rds_multi_zone: no
+    rds_option_group: "default:mysql-5-6"
+    rds_parameter_group: utf8
+    rds_engine_version: 5.6.22
+    rds_db_size: 10
+    rds_instance_type: db.m1.small
+    rds_vpc_subnet: gsn-rds-vpc
+    rds_vpc_security_groups: sg-8a42aeed
+    rds_tags:
+      environment: "{{ env }}"
+      deployment: ansible
+      role: tournament
+
+  # PaymentsDB Instances
+  - name: "paymentsdb-shard0-{{ env }}"
+    db_engine: MySQL
+    db_name: "{{ env }}"
+    rds_command: create
+    rds_multi_zone: no
+    rds_option_group: "default:mysql-5-6"
+    rds_parameter_group: utf8
+    rds_engine_version: 5.6.22
+    rds_db_size: 10
+    rds_instance_type: db.m1.small
+    rds_vpc_subnet: gsn-rds-vpc
+    rds_vpc_security_groups: sg-8a42aeed
+    rds_tags:
+      environment: "{{ env }}"
+      deployment: ansible
+      role: paymentsdb
+
+  - name: "paymentsdb-shard1-{{ env }}"
+    db_engine: MySQL
+    db_name: "{{ env }}"
+    rds_command: create
+    rds_multi_zone: no
+    rds_option_group: "default:mysql-5-6"
+    rds_parameter_group: utf8
+    rds_engine_version: 5.6.22
+    rds_db_size: 10
+    rds_instance_type: db.m1.small
+    rds_vpc_subnet: gsn-rds-vpc
+    rds_vpc_security_groups: sg-8a42aeed
+    rds_tags:
+      environment: "{{ env }}"
+      deployment: ansible
+      role: paymentsdb
+
+  # UsersDB Instances
+  - name: "usersdb-shard0-{{ env }}"
+    db_engine: MySQL
+    db_name: "{{ env }}"
+    rds_command: create
+    rds_multi_zone: no
+    rds_option_group: "default:mysql-5-6"
+    rds_parameter_group: utf8
+    rds_engine_version: 5.6.22
+    rds_db_size: 20
+    rds_instance_type: db.m1.small
+    rds_vpc_subnet: gsn-rds-vpc
+    rds_vpc_security_groups: sg-8a42aeed
+    rds_tags:
+      environment: "{{ env }}"
+      deployment: ansible
+      role: usersdb
+
+  - name: "usersdb-shard1-{{ env }}"
+    db_engine: MySQL
+    db_name: "{{ env }}"
+    rds_command: create
+    rds_multi_zone: no
+    rds_option_group: "default:mysql-5-6"
+    rds_parameter_group: utf8
+    rds_engine_version: 5.6.22
+    rds_db_size: 20
+    rds_instance_type: db.m1.small
+    rds_vpc_subnet: gsn-rds-vpc
+    rds_vpc_security_groups: sg-8a42aeed
+    rds_tags:
+      environment: "{{ env }}"
+      deployment: ansible
+      role: usersdb
+
+# MySQL Variables
+mysql_username: toor
+# 'mysql_password' is in *-*-secrets.yml

@@ -1,0 +1,117 @@
+---
+# Default setup. Can be overwritten later
+game: arena
+default_remote_user: ubuntu
+idle_user: idle
+do_accelerate: False
+idle_keys:
+  - public_keys/TeddyUsman.pub
+  - public_keys/alex.pub
+  - public_keys/alexr.pub
+  - public_keys/andrey.pub
+  - public_keys/ansible.pub
+  - public_keys/averno.pub
+  - public_keys/beisenbraun.pub
+  - public_keys/bfield.pub
+  - public_keys/byurecka.pub
+  - public_keys/davidk.pub
+  - public_keys/dennis.pub
+  - public_keys/dev_deploy.pub
+  - public_keys/dhopkins.pub
+  - public_keys/dima.pub
+  - public_keys/dion.pub
+  - public_keys/dsevush.pub
+  - public_keys/eroberts.pub
+  - public_keys/jenkins-arena-cashdev_rsa.pub
+  - public_keys/jenkins-arena-cashprod_rsa.pub
+  - public_keys/jenkins_dev_master.pub
+  - public_keys/jenkins_prod_master.pub
+  - public_keys/mdelisle.pub
+  - public_keys/ykravchyshyn.pub
+root_keys:
+  - public_keys/alex.pub
+  - public_keys/alexr.pub
+  - public_keys/andrey.pub
+  - public_keys/bfield.pub
+  - public_keys/dima.pub
+  - public_keys/eroberts.pub
+  - public_keys/ykravchyshyn.pub
+
+ec2_region: "{{ lookup('env','EC2_REGION') }}"
+
+gsn_inhouse_hosts:
+  - { name: 'git', ip: '10.10.14.26' }
+  - { name: 'git.example.com', ip: '10.10.14.26' }
+  - { name: 'git.example2.com', ip: '10.10.14.26' }
+  - { name: 'svn', ip: '10.10.14.54' }
+  - { name: 'svn.example.com', ip: '10.10.14.54' }
+  - { name: 'svn.example2.com', ip: '10.10.14.54' }
+  - { name: 'zabbix', ip: '10.10.14.58' }
+  - { name: 'zabbix.example.com', ip: '10.10.14.58' }
+  - { name: 'zabbix.example2.com', ip: '10.10.14.58' }
+  - { name: 'jenkins-arena-dev', ip: '172.29.33.88' }
+  - { name: 'jenkins.arena-dev.example3.com', ip: '172.29.33.88' }
+  - { name: 'glu-arena-dev', ip: '172.29.33.88' }
+  - { name: 'glu.arena-dev.example3.com', ip: '172.29.33.88' }
+  - { name: 'splunk.arena-dev.example3.com', ip: '172.29.43.176' }
+
+spinup_rds: false
+docker_install: false
+docker_graphdir: /data/docker
+docker_registry_url: docker-registry.example3.com
+docker_registry_email: arena-ops@example3.com
+docker_registry_user: arena-pull
+docker_default_tag: docker
+platform_deployment_type: glu
+
+game_application_logs: [ ]
+splunk_server: splunk
+splunk_tcpraw_port: 4957
+
+# AWS Credentials, which must be overwritten into *-*-secrets.yml
+aws_user: arn:aws:iam::123456789012:user/some_user
+aws_access_key_id: AKIAABCDEFGHIKJKLMNO
+aws_secret_access_key: qwertyuiopasdfghjklzxcvbnm,.1234567890-/
+
+# AWS SES Credentials, which must be overwritten into *-*-secrets.yml
+aws_ses_smtp_user: AKIA1234567890-=SMTP
+aws_ses_smtp_password: Aod4/aSOMEPASS9845nvnfdlivjlfmnbSMTP
+aws_ses_user: AKIA1234567890-=1234
+aws_ses_password: Aod4/aRelvnSOMEPASSfvug9845nvnfdlivjlfmnbbgfA
+
+# Valid arenaapp server roles
+arenaapp_valid_roles:
+  - all
+  - admin
+  - payments
+  - tournaments
+  - usermanagement
+  - apps
+  - celeryuser
+  - celerynotif
+  - celeryfb
+  - celeryinternal
+  - gametripeaks
+
+arena_http_ports:
+  payments: 8002
+  usermanagement: 8001
+  tournaments: 8004
+  fmr: 8005
+  apps: 8003
+  gametripeaks: 8010
+  admin: 8088
+  sentry: 8090
+
+# Valid pokerapp server roles
+pokerapp_valid_roles:
+  - all
+  - admin
+  - atc
+  - celery
+  - persist
+  - lb
+  - clog
+  - handprocessor
+  - sessionrouter
+  - numbat

@@ -1,0 +1,142 @@
+---
+# set these parameters to control the region, keypair, and AMI that are launched
+instances_keypair: devkey
+image_id: ami-d85e75b0
+docker_install: true
+spinup_rds: false
+env: "{{ game_env }}"
+game: arena
+
+# RabbitMQ variables
+# 'rabbitmq_admin_pass' are in *-*-secrets.yml
+rabbitmq_admin_user: idle
+
+used_services:
+  redis:
+    default:
+      environment: devshared
+      balancer: haproxy
+      haproxy_port: 6380
+    leaderboards:
+      environment: devshared
+      balancer: haproxy
+      haproxy_port: 6379
+    gamestate:
+      environment: devshared
+      balancer: haproxy
+      haproxy_port: 6378
+  rabbitmq:
+    internal:
+      environment: devshared
+      balancer: haproxy
+      haproxy_port: 5672
+      user: "{{ rabbitmq_admin_user }}"
+      password: "{{ rabbitmq_admin_pass }}"
+    general:
+      environment: devshared
+      balancer: haproxy
+      haproxy_port: 5673
+      user: "{{ rabbitmq_admin_user }}"
+      password: "{{ rabbitmq_admin_pass }}"
+  memcache:
+    core:
+      environment: devshared
+    gametripeaks:
+      environment: devshared
+  mysql:
+    masterdb:
+      environment: devshared
+      hosts:
+        - masterdb-devshared.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+    configdb:
+      environment: devshared
+      hosts:
+        - configdb-devshared.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+    fmrdb:
+      environment: devshared
+      hosts:
+        - fmrdb-devshared.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+    tournamentdb:
+      environment: devshared
+      hosts:
+        - tournamentdb-devshared.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+    paymentsdb:
+      environment: devshared
+      hosts:
+        - paymentsdb-shard0-devshared.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+        - paymentsdb-shard1-devshared.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+    usersdb:
+      environment: devshared
+      hosts:
+        - usersdb-shard0-devshared.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+        - usersdb-shard1-devshared.c2i4io1knn7g.us-east-1.rds.amazonaws.com
+
+idle_keys:
+  - public_keys/TeddyUsman.pub
+  - public_keys/alex.pub
+  - public_keys/alexr.pub
+  - public_keys/andrey.pub
+  - public_keys/ansible.pub
+  - public_keys/averno.pub
+  - public_keys/beisenbraun.pub
+  - public_keys/bfield.pub
+  - public_keys/byurecka.pub
+  - public_keys/davidk.pub
+  - public_keys/dennis.pub
+  - public_keys/dhopkins.pub
+  - public_keys/dima.pub
+  - public_keys/dion.pub
+  - public_keys/dsevush.pub
+  - public_keys/eroberts.pub
+  - public_keys/jenkins-arena-cashdev_rsa.pub
+  - public_keys/mdelisle.pub
+  - public_keys/ykravchyshyn.pub
+
+elb_sg: 'sg-9442aef3'
+elb_ssl_certid: arn:aws:iam::12345678:server-certificate/arena-dev_exp_072017
+
+ses:
+  smtp_server: email-smtp.us-east-1.amazonaws.com
+  smtp_port: 465
+  use_tls: yes
+
+ec2_instances:
+  # Application Servers
+  - type: all
+    instance_type: m3.medium
+    image: "{{ image_id }}"
+    group: ['public']
+    instance_tags:
+      Name: "{{ game_env }}"
+      role: all
+      environment: "{{ game_env }}"
+      deployment: ansible
+    count_tag:
+      role: all
+      environment: "{{ game_env }}"
+      deployment: ansible
+    volumes:
+      - device_name: /dev/sdp
+        volume_size: 20
+        delete_on_termination: true
+    azs:
+      - az: a
+        # Public Subnet ID in "a"
+        vpc_subnet_id: "{{ subnets['a']['public'] }}"
+        exact_count: 0
+      - az: b
+        # Public Subnet ID in "b"
+        vpc_subnet_id: "{{ subnets['b']['public'] }}"
+        exact_count: 0
+      - az: d
+        # Public Subnet ID in "d"
+        vpc_subnet_id: "{{ subnets['d']['public'] }}"
+        exact_count: 0
+      - az: e
+        # Public Subnet ID in "e"
+        vpc_subnet_id: "{{ subnets['e']['public'] }}"
+        exact_count: 1
+
+# MySQL Variables
+mysql_username: toor
+# 'mysql_password' is in *-*-secrets.yml

@@ -1,0 +1,39 @@
+---
+ec2_region: us-east-1
+s3_bootstrap_bucket: arenadev-ec2-bootstrap
+# Name of the directory inside /data where everything will live
+datadir: gsn
+deployment: dev
+
+subnets:
+  a:
+    public: subnet-9f500fe8
+    private: subnet-304f1047
+    dmz: subnet-754f1002
+    rds: subnet-264f1051
+    elb: subnet-da4f10ad
+    cache: subnet-4aba963d
+  b:
+    public: subnet-09f38250
+    private: subnet-edf382b4
+    dmz: subnet-25f3827c
+    rds: subnet-e6f382bf
+    elb: subnet-57f2830e
+    cache: subnet-6d410734
+  d:
+    public: subnet-c5dd47ee
+    private: subnet-88d248a3
+    dmz: subnet-36d2481d
+    rds: subnet-4dd24866
+    elb: subnet-9ed248b5
+    cache: subnet-b7701b9c
+  e:
+    public: subnet-c0a7aafa
+    private: subnet-53a6ab69
+    dmz: subnet-3da6ab07
+    rds: subnet-01a6ab3b
+    elb: subnet-5fa6ab65
+    cache: subnet-fb564ac1
+
+rds_instances: [ ]
+ec2_instances: [ ]

@@ -1,0 +1,102 @@
+ntp_servers:
+  - '0.amazon.pool.ntp.org'
+  - '1.amazon.pool.ntp.org'
+  - '2.amazon.pool.ntp.org'
+  - '3.amazon.pool.ntp.org'
+
+game_dirs:
+  - '/data/{{ datadir }}'
+  - '/data/{{ datadir }}/log'
+  - '/data/{{ datadir }}/{{ game }}'
+  - '/data/{{ datadir }}/{{ game }}/log'
+
+game_symlinks:
+  - { src: '/data/{{ datadir }}', dst: '/{{ datadir }}' }
+  - { src: '/data/{{ datadir }}', dst: '/srv/{{ datadir }}' }
+
+game_logs: "/data/{{ datadir }}/log"
+
+# The .deb package list to be installed
+deb_packages:
+  - { name: 'language-pack-en', state: 'latest' }
+  - { name: 'mc', state: 'latest' }
+  - { name: 'ccrypt', state: 'latest' }
+  - { name: 'libreadline-dev', state: 'latest' }
+  - { name: 'libaugeas-ruby', state: 'latest' }
+  - { name: 'ruby', state: 'latest' }
+  - { name: 'libmysqlclient-dev', state: 'latest' }
+  - { name: 'ruby-dev', state: 'latest' }
+  - { name: 's3cmd', state: 'latest' }
+  - { name: 'emacs23-nox', state: 'latest' }
+  - { name: 'build-essential', state: 'latest' }
+  - { name: 'curl', state: 'latest' }
+  - { name: 'git-core', state: 'latest' }
+  - { name: 'gdb', state: 'latest' }
+  - { name: 'htop', state: 'latest' }
+  - { name: 'iotop', state: 'latest' }
+  - { name: 'ncdu', state: 'latest' }
+  - { name: 'bmon', state: 'latest' }
+  - { name: 'tmux', state: 'latest' }
+  - { name: 'screen', state: 'latest' }
+  - { name: 'mosh', state: 'latest' }
+  - { name: 'pdsh', state: 'latest' }
+  - { name: 'mg', state: 'latest' }
+  - { name: 'mysql-client', state: 'latest' }
+  - { name: 'python-software-properties', state: 'latest' }
+  - { name: 'python-setuptools', state: 'latest' }
+  - { name: 'python-dev', state: 'latest' }
+  - { name: 'python3.4', state: 'latest' }
+  - { name: 'python3-pip', state: 'latest' }
+  - { name: 'sec', state: 'latest' }
+  - { name: 'sysstat', state: 'latest' }
+  - { name: 'libyaml-dev', state: 'latest' }
+  - { name: 'lzop', state: 'latest' }
+  - { name: 'gawk', state: 'latest' }
+  - { name: 'sysv-rc-conf', state: 'latest' }
+  - { name: 'libregexp-common-net-cidr-perl', state: 'latest' }
+  - { name: 'openssl', state: 'latest' }
+  - { name: 'xmlsec1', state: 'latest' }
+  - { name: 'debian-keyring', state: 'latest' }
+  - { name: 'debian-archive-keyring', state: 'latest' }
+  - { name: 'lvm2', state: 'latest' }
+  - { name: 'xfsprogs', state: 'latest' }
+  - { name: 'mdadm', state: 'latest' }
+  - { name: 'tzdata', state: 'latest' }
+  - { name: 'ntp', state: 'latest' }
+  # Drop 'desktop' packages
+  - { name: 'libx11-6', state: 'absent' }
+  - { name: 'libx11-data', state: 'absent' }
+  - { name: 'avahi-daemon', state: 'absent' }
+  - { name: 'network-manager', state: 'absent' }
+  - { name: 'libxau6', state: 'absent' }
+  - { name: 'libpolkit-gobject-1-0', state: 'absent' }
+  - { name: 'libpam-ck-connector', state: 'absent' }
+  - { name: 'libxcb1', state: 'absent' }
+  - { name: 'libxdmcp6', state: 'absent' }
+  - { name: 'landscape-common', state: 'absent' }
+  - { name: 'landscape-client', state: 'absent' }
+
+splunk_server: splunk.arena-dev.gsngames.com
+splunk_tcpraw_port: 4957
+
+game_application_logs:
+  - { log: '{{ game_logs }}/admin_access.log', sourcetype: 'admin_access', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/admin_out.log', sourcetype: 'admin_out', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/apps_access.log', sourcetype: 'apps_access', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/apps_out.log', sourcetype: 'apps_out', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/fmr_access.log', sourcetype: 'fmr_access', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/fmr_out.log', sourcetype: 'fmr_out', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/payments_access.log', sourcetype: 'payments_access', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/payments_out.log', sourcetype: 'payments_out', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/tournaments_access.log', sourcetype: 'tournaments_access', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/tournaments_out.log', sourcetype: 'tournaments_out', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/usermanagement_access.log', sourcetype: 'usermanagement_access', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/usermanagement_out.log', sourcetype: 'usermanagement_out', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/nginx_access.log', sourcetype: 'nginx_access', arenaapp_rotate: no }
+  - { log: '{{ game_logs }}/nginx_error.log', sourcetype: 'nginx_error', arenaapp_rotate: no }
+  - { log: '{{ game_logs }}/celeryfb.log', sourcetype: 'celeryfb', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/celerynotif.log', sourcetype: 'celerynotif', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/celeryinternal.log', sourcetype: 'celeryinternal', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/celeryuser.log', sourcetype: 'celeryuser', arenaapp_rotate: yes }
+  - { log: '{{ game_logs }}/client.log', sourcetype: 'client', arenaapp_rotate: no }
+  - { log: '/var/log/syslog', sourcetype: 'syslog', arenaapp_rotate: no }
