@@ -1,0 +1,8 @@
+---
+# simplespeedtest.yml
+- hosts: compute
+  gather_facts: no
+  tasks:
+    - debug: msg={{inventory_hostname}}
+      delegate_to: localhost
+ 
