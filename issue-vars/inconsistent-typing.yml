@@ -1,0 +1,37 @@
+---
+- name: type preservation test
+  hosts: localhost
+  sudo: no
+  gather_facts: no
+
+  vars:
+    - num_var: 5
+    - num_ref: "{{ num_var }}"
+    - num_cast_ref: "{{ num_var | int }}"
+    - bool_var: yes
+    - bool_ref: "{{ bool_var }}"
+    - null_var: null
+    - null_ref: "{{ null_var }}"
+    - null2: None
+    - null2_ref: "{{ null }}"
+
+    - var_map:
+        num_var: "{{ num_var }}"
+        num_ref: "{{ num_ref }}"
+        num_ref_cast: "{{ num_ref | int }}"
+        num_cast_ref: "{{ num_cast_ref }}"
+        num_cast_ref_cast: "{{ num_cast_ref | int }}"
+        bool_var: "{{ bool_var }}"
+        bool_ref: "{{ bool_ref }}"
+        null_var: "{{ null_var }}"
+        null_ref: "{{ null_ref }}"
+
+    - null2_map:
+        null2: "{{ null2 }}"
+        null2_ref: "{{ null2_ref }}"
+
+  tasks:
+  - name: numeric type preservation test
+    debug: var=var_map
+  - name: "null evaluation failure"
+    debug: var=null2_map
