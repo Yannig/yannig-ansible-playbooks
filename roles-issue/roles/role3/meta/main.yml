@@ -1,0 +1,4 @@
+---
+dependencies:
+  - role: role2
+    role2_variable: "from role3"

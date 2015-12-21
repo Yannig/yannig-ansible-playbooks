@@ -1,0 +1,6 @@
+- name: calling role2 works
+  hosts: localhost
+  gather_facts: no
+  roles:
+    - role: role2
+      role2_variable: "from playbook"

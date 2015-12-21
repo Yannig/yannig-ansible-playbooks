@@ -1,0 +1,4 @@
+---
+dependencies:
+  - role: role1
+    role1_variable: "{{ role2_variable }}"

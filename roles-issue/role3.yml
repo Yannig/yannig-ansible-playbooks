@@ -1,0 +1,5 @@
+- name: calling role3 fails
+  hosts: localhost
+  gather_facts: no
+  roles:
+    - role: role3

@@ -1,0 +1,3 @@
+---
+- name: print variable
+  debug: msg="{{ role1_variable }}"
