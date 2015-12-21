@@ -1,0 +1,13 @@
+---
+# Vars mapper test
+
+- name: "Test"
+  hosts: "localhost"
+  connection: "local"
+  gather_facts: no
+  vars:
+    - test: "test"
+  tasks:
+    - debug: var=test
+    - debug: var=item
+      with_items: [ 'item', 'item2' ]
