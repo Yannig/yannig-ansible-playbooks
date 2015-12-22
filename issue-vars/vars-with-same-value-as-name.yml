@@ -9,5 +9,6 @@
     - test: "test"
   tasks:
     - debug: var=test
+    - debug: var=undefined
     - debug: var=item
       with_items: [ 'item', 'item2' ]
