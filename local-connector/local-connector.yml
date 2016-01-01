@@ -1,0 +1,51 @@
+---
+
+- name: the last task will throw an error
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: create files - that will work
+      copy:
+        content: "test"
+        dest: "/tmp/{{ item }}"
+      with_items:
+        - testfile1
+        - testfile2
+
+    - name: create links - that will crash
+      become: yes
+      file:
+        src: "/tmp/{{ item }}"
+        dest: "/tmp/{{ item }}link"
+        state: link
+      with_items:
+        - testfile1
+        - testfile2
+
+    - name: create links - no sudo
+      become: no
+      file:
+        src: "/tmp/{{ item }}"
+        dest: "/tmp/{{ item }}link-no-sudo"
+        state: link
+      with_items:
+        - testfile1
+        - testfile2
+
+    - name: create links - sudo again
+      become: yes
+      file:
+        src: "/tmp/{{ item }}"
+        dest: "/tmp/{{ item }}link-sudo-again"
+        state: link
+      with_items:
+        - testfile1
+        - testfile2
+
+    - name: create links - sudo again but no with_items
+      become: yes
+      file:
+        src: "/tmp/testfile1"
+        dest: "/tmp/testfile1link-sudo-again-no-with"
+        state: link
