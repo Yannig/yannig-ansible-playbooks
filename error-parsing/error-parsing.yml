@@ -1,0 +1,7 @@
+---
+
+- name: "error parsing"
+  hosts: localhost
+  tasks:
+    - fail: "Bad parsing héhé"
+
