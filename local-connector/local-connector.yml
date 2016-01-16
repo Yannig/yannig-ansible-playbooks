@@ -12,6 +12,7 @@
       with_items:
         - testfile1
         - testfile2
+        - testfile3
 
     - name: create links - that will crash
       become: yes
@@ -22,6 +23,7 @@
       with_items:
         - testfile1
         - testfile2
+        - testfile3
 
     - name: create links - no sudo
       become: no
