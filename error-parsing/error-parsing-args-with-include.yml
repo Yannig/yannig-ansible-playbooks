@@ -1,0 +1,4 @@
+---
+
+- name: "Something with unicode héhé and a bad args"
+  file: dest=/tmp/test stat=touch mode 600

@@ -1,0 +1,6 @@
+---
+
+- name: "error parsing"
+  hosts: localhost
+  tasks:
+    - include: "error-parsing-args-with-include.yml"
