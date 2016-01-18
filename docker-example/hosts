@@ -1,0 +1,10 @@
+[docker-server]
+localhost
+
+[docker-container]
+docker1
+docker2
+
+[docker-container:vars]
+ansible_connection=docker
+ansible_remote_user=root

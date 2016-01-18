@@ -1,0 +1,8 @@
+---
+
+- name: "create docker container"
+  hosts: docker-server
+  gather_facts: no
+  tasks:
+    - docker: name={{item}} image=centos command="sleep 3600" state=started
+      with_items: groups['docker-container']

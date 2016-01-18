@@ -1,0 +1,8 @@
+---
+
+- name: "create docker container"
+  hosts: docker-container
+  gather_facts: no
+  tasks:
+    - copy: dest=/tmp/{{item}} content=test
+      with_items: [ test1, test2, test3 ]
