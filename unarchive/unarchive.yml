@@ -1,0 +1,10 @@
+---
+
+- name: "Unarchive problem"
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - file: path=/tmp/unarchive state=absent
+    - file: path=/tmp/unarchive state=directory
+    - get_url: url=http://apache.mirrors.ovh.net/ftp.apache.org/dist/tomee/tomee-1.7.4/apache-tomee-1.7.4-plus.tar.gz dest=/tmp/
+    - unarchive: src=/tmp/apache-tomee-1.7.4-plus.tar.gz dest=/tmp/unarchive
