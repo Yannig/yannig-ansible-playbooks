@@ -1,0 +1,12 @@
+---
+
+- name: "Simple example"
+  hosts: all
+  gather_facts: no
+  tasks:
+    - copy: content={{inventory_hostname}} dest=/tmp/force-mode-{{  inventory_hostname}} mode=0600
+    - copy: content={{inventory_hostname}} dest=/tmp/default-mode-{{inventory_hostname}}
+    - shell: ls -l /tmp/*-mode-{{inventory_hostname}}
+      register: _
+      changed_when: no
+    - debug: var=_.stdout_lines

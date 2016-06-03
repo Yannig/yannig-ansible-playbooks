@@ -1,0 +1,5 @@
+---
+
+ansible_module_args:
+  copy:
+    mode: "0644"
