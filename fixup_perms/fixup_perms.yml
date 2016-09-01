@@ -1,0 +1,7 @@
+---
+
+- name: "fixup_perms test"
+  gather_facts: no
+  hosts: localhost
+  tasks:
+    - fixup_perms: {}
