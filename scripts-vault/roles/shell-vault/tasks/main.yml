@@ -1,0 +1,25 @@
+---
+
+- name: "Shell with encrypted password"
+  template:
+    src: "template.sh.j2"
+    dest: "/tmp/creation.sh"
+    mode: "755"
+  vars:
+    encrypted_value: "{{my_value|des3_vault(des_key)}}"
+  register: _
+
+- name: "Script execution with DES_KEY"
+  shell: "/tmp/creation.sh 2>&1"
+  environment:
+    DES_KEY: "{{des_key}}"
+  register: _
+
+- debug: var=_
+
+- name: "Script execution without DES_KEY"
+  shell: "/tmp/creation.sh 2>&1"
+  ignore_errors: yes
+  register: _
+
+- debug: var=_

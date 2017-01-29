@@ -1,0 +1,7 @@
+---
+
+- name: "Shell vault"
+  gather_facts: no
+  hosts: localhost
+  roles:
+    - role: "shell-vault"

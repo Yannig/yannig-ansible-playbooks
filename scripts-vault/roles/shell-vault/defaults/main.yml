@@ -1,0 +1,4 @@
+---
+
+des_key: "{{inventory_hostname|random_key}}"
+my_value: "simple-value"
