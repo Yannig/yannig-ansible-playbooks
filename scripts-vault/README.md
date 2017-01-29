@@ -6,9 +6,7 @@ You can read the original article at the following location (french): https://le
 But why we wan't to vault our scripts first?
 --------------------------------------------
 
-With Ansible, you often end up with the following kind of implementation:
-
-::
+With Ansible, you often end up with this kind of implementation:
 
     - name: "Put a template script"
       template:
@@ -22,4 +20,4 @@ With Ansible, you often end up with the following kind of implementation:
       when: _.changed|d('no')|bool
 
 
-Problem: if the script use password, you get them in clear text on your machine. The playbook **shell-vault.yml** is an example of implementation to hide sensible data using 3DES encryption.
+Problem: if the script use private data (password, login), you get them in clear text on your machine. The playbook **shell-vault.yml** is an example of implementation to hide sensitive data using 3DES encryption.
