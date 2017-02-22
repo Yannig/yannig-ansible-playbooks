@@ -1,0 +1,11 @@
+---
+
+- name: "Crash when using --diff option"
+  gather_facts: no
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: "Copy a dummy iso8859-15 file"
+      copy: src=iso8859-15.txt dest=/tmp/test.txt
+    - name: "Template over dummy file without iso8859-15 (crash with --diff)"
+      template: src=utf8.txt.j2 dest=/tmp/test.txt
