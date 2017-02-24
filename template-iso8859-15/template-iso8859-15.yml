@@ -7,7 +7,11 @@
   vars:
     some_accents: "âéè"
   tasks:
-    - name: "iso8859-15 template"
-      template: src=iso8859-15.txt.j2 dest=/tmp/test.txt decode=iso8859-15 encode=iso8859-15
+    - name: "from utf8 template to utf8"
+      template: src=utf8.txt.j2 dest=/tmp/test-from-utf8-15-to-utf8.txt
+    - name: "from iso8859-15 template to utf8"
+      template: src=iso8859-15.txt.j2 dest=/tmp/test-from-iso8859-15-to-utf8.txt decode=iso8859-15
+    - name: "from utf8 template to iso8859-15"
+      template: src=iso8859-15.txt.j2 dest=/tmp/test-from-iso8859-to-iso8859-15.txt decode=iso8859-15 encode=iso8859-15
     - name: "utf-8 template encoded to iso8859-15"
-      template: src=utf8.txt.j2 dest=/tmp/test.txt encode=iso8859-15
+      template: src=utf8.txt.j2 dest=/tmp/test-from-utf8-to-iso8859-15.txt encode=iso8859-15
