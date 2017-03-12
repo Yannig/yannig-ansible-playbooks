@@ -7,6 +7,8 @@
   vars:
     some_accents: "âéè"
   tasks:
+    - shell: "rm -f /tmp/test-*.txt"
+      tags: "always"
     - name: "from utf8 template to utf8"
       template: src=utf8.txt.j2 dest=/tmp/test-from-utf8-15-to-utf8.txt
     - name: "from iso8859-15 template to utf8"
@@ -15,3 +17,16 @@
       template: src=iso8859-15.txt.j2 dest=/tmp/test-from-iso8859-to-iso8859-15.txt decode=iso8859-15 encode=iso8859-15
     - name: "utf-8 template encoded to iso8859-15"
       template: src=utf8.txt.j2 dest=/tmp/test-from-utf8-to-iso8859-15.txt encode=iso8859-15
+    - name: "iso8859-15 file"
+      template: src=utf8.txt.j2 dest=/tmp/test-change-encoding.txt encode=iso8859-15
+    - name: "Replace iso8859-15 with utf-8"
+      template: src=utf8.txt.j2 dest=/tmp/test-change-encoding.txt
+    - name: "Bad decode value"
+      template: src=iso8859-15.txt.j2 dest=/tmp/test-change-encoding.txt encode=iso8859-15
+      ignore_errors: yes
+      register: _bad
+    - name: "Good decode value"
+      template: src=iso8859-15.txt.j2 dest=/tmp/test-change-encoding.txt decode=iso8859-15 encode=iso8859-15
+    - assert: that="_bad.failed"
+    - name: "Bad decode value"
+      template: src=utf8.txt.j2 dest=/tmp/test-change-encoding.txt decode=iso8859-15 encode=iso8859-15
