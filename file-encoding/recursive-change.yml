@@ -1,0 +1,8 @@
+---
+
+- name: "Recursive change with non utf-8 filename"
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: "Recursive change (crash)"
+      file: path=dir mode=0755 recurse=yes
